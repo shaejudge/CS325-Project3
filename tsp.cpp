@@ -5,6 +5,7 @@
 #include <string>
 #include <time.h>
 #include <math.h>
+#include <chrono>
 
 using namespace std;
 
@@ -112,6 +113,7 @@ void outputToFile(struct cityLList* list, string filename) {
 		outFile << ptr->id << endl;
 		ptr = ptr->next;
 	}
+	
 
 	outFile.close();   
 }
@@ -120,12 +122,11 @@ void printOutput(struct cityLList* list) {
 	struct City* ptr = list->frontSent->next;;
 	int totalDistance = findTotalCostOfTrip(list);
 
-	cout << totalDistance << endl;
 	for (int i = 0; i < list->size; i++){
 		cout << ptr->id << endl;
 		ptr = ptr->next;
 	}
-
+	cout << "Total Distance: " << totalDistance << endl;
 }
 
 struct City* findNearestNeighbor(struct cityLList* nyvlist, struct City* city) {
@@ -171,8 +172,7 @@ void buildPath(struct cityLList* vlist, struct City* city, struct cityLList* nyv
 
 
 int main(int argc, char *argv[]) {
-	clock_t start; 
-	double duration; 
+	chrono::time_point<chrono::system_clock> start, end; 
 	struct cityLList* visitedCities = new cityLList;
 	struct cityLList* nyVisitedCities = new cityLList;
 	struct City* startCity = new City;
@@ -201,15 +201,16 @@ int main(int argc, char *argv[]) {
 	myfile.close();
 	//end input
 
-	start = clock(); 
+	start = chrono::system_clock::now();
 	startCity = randomStart(nyVisitedCities);
-
 	buildPath(visitedCities, startCity, nyVisitedCities);
-
-	duration = (clock() - start) / (double)CLOCKS_PER_SEC; 
+	end = chrono::system_clock::now();
+	
+	chrono::duration<double, std::milli> duration = end-start;
+		 
 	printOutput(visitedCities);
     outputToFile(visitedCities, filename);
-	cout << "Time: " << duration << endl; 
+	cout << "Time: " << duration.count() << endl; 
 
 	return 0;
 }
